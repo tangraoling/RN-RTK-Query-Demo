@@ -71,6 +71,7 @@ export const wanApi = createApi({
         method: 'POST',
         params: arg,
       }),
+      invalidatesTags: () => ['Home-Article', 'Tree-Article', 'Offiaccount-Article', 'Project-Article', 'Favor-Article'],
     }),
     logout: builder.mutation<WanResponse<any>, void>({
       query: () => 'user/logout/json',

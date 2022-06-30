@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import HtmlText from '../components/HtmlText'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useCancelFavorArticleMutation, useFavorArticleMutation } from '../reducers/wanApi'
+import { useAppSelector } from '../hooks'
 
 type Props = {
   item: Article
@@ -23,12 +24,16 @@ export default function({ item, showKind, showTop = false, onFavorChange }: Prop
   const  navigation  = useNavigation()
   const [postCollect] = useFavorArticleMutation()
   const [postUnCollect] = useCancelFavorArticleMutation()
-
+  const { isLogin } = useAppSelector(st => st.user)
 
   const pressArticle = (item: Article) => {
     navigation.navigate('Web', { uri: item.link, title: item.title })
   }
   const collect = async () => {
+    if (!isLogin) {
+      navigation.navigate('Login')
+      return
+    }
     console.log('collect', item.id)
     const { errorCode } = await postCollect(item.id).unwrap()
     if (errorCode === 0) {
@@ -47,7 +52,7 @@ export default function({ item, showKind, showTop = false, onFavorChange }: Prop
       <HtmlText numberOfLines={2} style={styles.itemText}>{item.title}</HtmlText>
 
       <View style={styles.itemBottom}>
-        {item.collect ? (
+        {isLogin && item.collect ? (
           <TouchableOpacity style={styles.collectBtn} onPress={() => unCollect()}>
             <Icon size={20} name='heart' color={appStyle.redColor} />
           </TouchableOpacity>
